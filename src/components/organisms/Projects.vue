@@ -13,10 +13,10 @@ type Labels = {
         games: string;
     };
     ui: {
-        preview: string;         // button on card
-        open: string;            // open preview in new tab
-        closePreview: string;    // aria label
-        showingAt: string;       // "Showing at {w}×{h}."
+        preview: string;
+        open: string;
+        closePreview: string;
+        showingAt: string;
     };
 };
 
@@ -54,6 +54,8 @@ type Project = {
     image?: string;
     href?: string;
     preview?: { src: string; width?: number; height?: number };
+    shrinkImage?: boolean;
+    backgroundColor?: string;
 };
 
 const selectedItem = ref<FilterKey>("all");
@@ -68,8 +70,10 @@ const items: ReadonlyArray<Project> = [
         },
         tags: ["NextJS", "Livestream", "OBS", "Twitch", "YouTube", "Kick"],
         category: "web",
-        image: "/images/streamspice.png",
+        image: "/images/streamspice.webp",
         href: "https://streamspice.io",
+        shrinkImage: true,
+        backgroundColor: "#ffffff",
     },
     {
         i18n: {
@@ -99,6 +103,9 @@ const items: ReadonlyArray<Project> = [
         },
         tags: ["TypeScript", "ThreeJS", "Game"],
         category: "games",
+        image: "/images/colortrails.webp",
+        shrinkImage: true,
+        backgroundColor: '#8e40a7',
         href: "https://github.com/ShahiemS/whatthesocket",
     },
     {
@@ -106,18 +113,24 @@ const items: ReadonlyArray<Project> = [
             en: { title: "BoomBrush", description: "Lightweight, spec-compliant HTML5 banners for multiple networks." },
             nl: { title: "BoomBrush", description: "Lichte, spec-conforme HTML5-banners voor meerdere netwerken." },
         },
-        tags: ["GSAP", "HTML5"],
+        tags: ["GSAP", "HTML5", "HTML5 Banners", "Animations"],
         category: "banners",
         preview: { src: "/banners/demo/index.html", width: 300, height: 250 },
+        image: "/images/boombrush.webp",
+
     },
     {
         i18n: {
             en: { title: "Sanas", description: "Lightweight, spec-compliant HTML5 banners for multiple networks." },
             nl: { title: "Sanas", description: "Lichte, spec-conforme HTML5-banners voor meerdere netwerken." },
         },
-        tags: ["GSAP", "HTML5"],
+        tags: ["GSAP", "HTML5", "HTML5 Banners", "Animations"],
         category: "banners",
         preview: { src: "/banners/demo/index.html", width: 300, height: 250 },
+        backgroundColor: "linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02))", // example with gradient
+        shrinkImage: false,
+        image: "/images/sanas.webp",
+
     },
 ];
 
@@ -168,10 +181,14 @@ const filterLabel = (f: FilterKey) =>
                 class="group block rounded-3xl bg-white/5 ring-1 ring-white/10 p-5 hover:ring-white/20 transition shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
                 :href="project.href || '#'" :target="isExternal(project.href) ? '_blank' : undefined"
                 :rel="isExternal(project.href) ? 'noopener noreferrer' : undefined" :aria-label="project.title">
-                <div class="aspect-[16/10] rounded-2xl bg-white/5 ring-1 ring-white/10 overflow-hidden">
+                <!-- Image / Logo box -->
+                <div class="aspect-[16/10] rounded-2xl ring-1 ring-white/10 overflow-hidden flex items-center justify-center"
+                    :class="!project.backgroundColor ? 'bg-white/5' : ''"
+                    :style="project.backgroundColor ? { background: project.backgroundColor } : {}">
                     <template v-if="project.image">
-                        <img :src="project.image" class="w-full h-full object-cover" :alt="project.title" loading="lazy"
-                            decoding="async" />
+                        <img :src="project.image" :alt="project.title" loading="lazy" decoding="async" :class="project.shrinkImage
+                            ? 'max-w-full max-h-full object-contain p-6'
+                            : 'w-full h-full object-cover'" />
                     </template>
                     <template v-else>
                         <div class="w-full h-full flex items-center justify-center p-4 text-center">
