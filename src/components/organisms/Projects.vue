@@ -44,13 +44,11 @@ const labels: Record<Lang, Labels> = {
 const languageStore = useLanguageStore();
 const t = computed<Labels>(() => labels[languageStore.lang]);
 
-/* ===== data model =====
-   Use stable keys for categories so filtering isn’t language-dependent. */
 type CategoryKey = "web" | "banners" | "games";
 type FilterKey = "all" | CategoryKey;
 
 type Project = {
-    i18n: Record<Lang, { title: string; blurb: string }>;
+    i18n: Record<Lang, { title: string; description: string }>;
     tags: readonly string[];
     category: CategoryKey;
     image?: string;
@@ -62,12 +60,11 @@ const selectedItem = ref<FilterKey>("all");
 
 const filters: ReadonlyArray<FilterKey> = ["all", "web", "banners", "games"];
 
-// Items with i18n fields (titles/blurbs translated)
 const items: ReadonlyArray<Project> = [
     {
         i18n: {
-            en: { title: "StreamSpice", blurb: "Boost your livestream with widgets, overlays, and alerts." },
-            nl: { title: "StreamSpice", blurb: "Boost je livestream met widgets, overlays en alerts." },
+            en: { title: "StreamSpice", description: "Boost your livestream with widgets, overlays, and alerts." },
+            nl: { title: "StreamSpice", description: "Boost je livestream met widgets, overlays en alerts." },
         },
         tags: ["NextJS", "Livestream", "OBS", "Twitch", "YouTube", "Kick"],
         category: "web",
@@ -78,11 +75,11 @@ const items: ReadonlyArray<Project> = [
         i18n: {
             en: {
                 title: "WhatTheSocket",
-                blurb: "A lightweight WebSocket client with auto-reconnect and event-based messaging in TypeScript.",
+                description: "A lightweight WebSocket client with auto-reconnect and event-based messaging in TypeScript.",
             },
             nl: {
                 title: "WhatTheSocket",
-                blurb: "Lichtgewicht WebSocket-client met auto-reconnect en event-based messaging in TypeScript.",
+                description: "Lichtgewicht WebSocket-client met auto-reconnect en event-based messaging in TypeScript.",
             },
         },
         tags: ["TypeScript", "Websockets", "Package"],
@@ -93,11 +90,11 @@ const items: ReadonlyArray<Project> = [
         i18n: {
             en: {
                 title: "ColorTrails",
-                blurb: "A lightweight WebSocket client with auto-reconnect and event-based messaging in TypeScript.",
+                description: "A lightweight WebSocket client with auto-reconnect and event-based messaging in TypeScript.",
             },
             nl: {
                 title: "ColorTrails",
-                blurb: "Lichtgewicht WebSocket-client met auto-reconnect en event-based messaging in TypeScript.",
+                description: "Lichtgewicht WebSocket-client met auto-reconnect en event-based messaging in TypeScript.",
             },
         },
         tags: ["TypeScript", "ThreeJS", "Game"],
@@ -106,8 +103,8 @@ const items: ReadonlyArray<Project> = [
     },
     {
         i18n: {
-            en: { title: "BoomBrush", blurb: "Lightweight, spec-compliant HTML5 banners for multiple networks." },
-            nl: { title: "BoomBrush", blurb: "Lichte, spec-conforme HTML5-banners voor meerdere netwerken." },
+            en: { title: "BoomBrush", description: "Lightweight, spec-compliant HTML5 banners for multiple networks." },
+            nl: { title: "BoomBrush", description: "Lichte, spec-conforme HTML5-banners voor meerdere netwerken." },
         },
         tags: ["GSAP", "HTML5"],
         category: "banners",
@@ -115,8 +112,8 @@ const items: ReadonlyArray<Project> = [
     },
     {
         i18n: {
-            en: { title: "Sanas", blurb: "Lightweight, spec-compliant HTML5 banners for multiple networks." },
-            nl: { title: "Sanas", blurb: "Lichte, spec-conforme HTML5-banners voor meerdere netwerken." },
+            en: { title: "Sanas", description: "Lightweight, spec-compliant HTML5 banners for multiple networks." },
+            nl: { title: "Sanas", description: "Lichte, spec-conforme HTML5-banners voor meerdere netwerken." },
         },
         tags: ["GSAP", "HTML5"],
         category: "banners",
@@ -130,7 +127,7 @@ const projects = computed(() => {
     return list.map((p) => ({
         ...p,
         title: p.i18n[languageStore.lang].title,
-        blurb: p.i18n[languageStore.lang].blurb,
+        description: p.i18n[languageStore.lang].description,
     }));
 });
 
@@ -141,7 +138,7 @@ const isExternal = (url?: string) => !!url && /^(?:https?:)?\/\//i.test(url);
    =========================== */
 const selectedPreview = ref<null | { title: string; src: string; width?: number; height?: number }>(null);
 
-const openPreview = (p: Project & { title?: string; blurb?: string }) => {
+const openPreview = (p: Project & { title?: string; description?: string }) => {
     if (!p.preview) return;
     selectedPreview.value = {
         title: p.i18n[languageStore.lang].title,
@@ -200,7 +197,7 @@ const filterLabel = (f: FilterKey) =>
                 </div>
 
                 <p class="mt-2 text-sm text-white/70">
-                    {{ project.blurb }}
+                    {{ project.description }}
                 </p>
 
                 <div class="mt-3 flex flex-wrap gap-2">
